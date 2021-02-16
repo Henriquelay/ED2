@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
 
     run(josephus, atoi(argv[2]), argc > 3);
 
-    printAll(josephus);
+    if (argc > 3) printAll(josephus);
 
     destroy(josephus);
 }
