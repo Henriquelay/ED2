@@ -133,10 +133,12 @@ void postOrderIterative(node_t* tree, void (*visit)(node_t*)) {
             current = current->left;
         } else {
             node_t* stackHead = nodes->value;
-            
+
             if (stackHead->right != NULL && lastNodeVisited != stackHead->right) {
                 current = stackHead->right;
             } else {
+                visit(stackHead);
+                lastNodeVisited = pop(&nodes);
             }
         }
     }
