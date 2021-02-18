@@ -19,6 +19,9 @@ void push(stack_t** stackp, void* item) {
 }
 
 void* pop(stack_t** stackp) {
+    if (*stackp == NULL) {
+        return NULL;
+    }
     void* holder = (*stackp)->value;
     stack_t* destroyMe = *stackp;
     if ((*stackp)->next != NULL) {
@@ -37,11 +40,11 @@ void print(stack_t* stack, const char* format) {
     puts("");
 }
 
-void destroy(stack_t** stackp) {
+void destroyStack(stack_t** stackp) {
     if (*stackp == NULL) {
         return;
     }
-    destroy(&((*stackp)->next));
+    destroyStack(&((*stackp)->next));
     free((*stackp)->value);
     free(*stackp);
     *stackp = NULL;

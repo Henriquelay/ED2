@@ -15,6 +15,6 @@ void* pop(stack_t** stackp);
 
 void print(stack_t* stack, const char* format);
 
-void destroy(stack_t** stackp);
+void destroyStack(stack_t** stackp);
 
 #endif

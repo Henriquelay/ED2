@@ -84,8 +84,8 @@ int main(int argc, char** argv) {
 
     free(answer);
 
-    destroy(&stackOP);
-    destroy(&stackNUM);
+    destroyStack(&stackOP);
+    destroyStack(&stackNUM);
 
     return 0;
 }
