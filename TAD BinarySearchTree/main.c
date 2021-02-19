@@ -11,21 +11,24 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    char debugMode = argc > 2;
+
     srand(time(NULL));
     node_t* tree = NULL;
+    if (debugMode) printf("Generated: ");
     for (int i = 0; i < atoi(argv[1]); i++) {
-        int generated = rand();
+        int generated = rand() % 20;
+        if (debugMode) printf("%d ", generated);
         tree = insertKey(&tree, generated);
     }
+    if (debugMode) puts("");
+
 
     clock_t startTime;
 
     startTime = clock();
-    inOrderRecursive(tree, &printUsingFormat);
-    printf("Recursive time: %lf seconds\n", ((double)clock() - startTime) / CLOCKS_PER_SEC);
-    startTime = clock();
-    inOrderIterative(tree, &printUsingFormat);
-    printf("Iterative time: %lf seconds\n", ((double)clock() - startTime) / CLOCKS_PER_SEC);
+    levelOrderInterative(tree, &printUsingFormat);
+    printf("Iterative level time: %lf seconds\n", ((double)clock() - startTime) / CLOCKS_PER_SEC);
 
 
 
