@@ -16,7 +16,7 @@ typedef struct list_t {
     linked_node_t* tail;
 } list_t;
 
-list_t* init_list();
+list_t* initList();
 
 void push(list_t* list, void* item);
 void* pop(list_t* list);

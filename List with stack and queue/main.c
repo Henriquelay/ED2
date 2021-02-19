@@ -9,7 +9,7 @@ int main(int argc, char** argv) {
     }
 
     srand(time(NULL));
-    list_t* list = init_list();
+    list_t* list = initList();
 
     printf("Generated: ");
     for (int i = 0; i < atoi(argv[1]); i++) {

@@ -1,6 +1,6 @@
 #include "list.h"
 
-list_t* init_list() {
+list_t* initList() {
     list_t* newList = (list_t*)malloc(sizeof(list_t));
     if (newList == NULL) {
         perror("Error creating new list. Exiting");
@@ -13,6 +13,9 @@ list_t* init_list() {
 }
 
 void push(list_t* list, void* item) {
+    if (item == NULL) {
+        return;
+    }
     linked_node_t* newNode = (linked_node_t*)malloc(sizeof(linked_node_t));
     if (newNode == NULL) {
         perror("Allocation error: Node couldn't be created. Exiting.");
@@ -49,6 +52,9 @@ void* pop(list_t* list) {
 }
 
 void enqueue(list_t* list, void* item) {
+    if (item == NULL) {
+        return;
+    }
     linked_node_t* newNode = (linked_node_t*)malloc(sizeof(linked_node_t));
     if (newNode == NULL) {
         perror("Allocation error: Node couldn't be created. Exiting.");
