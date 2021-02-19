@@ -20,9 +20,9 @@ node_t* insertKey(node_t** tree, int key);
 
 int height(node_t* tree);
 
-void preOrder(node_t* tree, void (*visit)(node_t*));
-void inOrder(node_t* tree, void (*visit)(node_t*));
-void posOrder(node_t* tree, void (*visit)(node_t*));
+void preOrderRecursive(node_t* tree, void (*visit)(node_t*));
+void inOrderRecursive(node_t* tree, void (*visit)(node_t*));
+void postOrderRecursive(node_t* tree, void (*visit)(node_t*));
 
 void preOrderIterative(node_t* tree, void (*visit)(node_t*));
 void inOrderIterative(node_t* tree, void (*visit)(node_t*));

@@ -61,30 +61,30 @@ int height(node_t* tree) {
     return rightHeight + 1;
 }
 
-void preOrder(node_t* tree, void (*visit)(node_t*)) {
+void preOrderRecursive(node_t* tree, void (*visit)(node_t*)) {
     if (tree == NULL) {
         return;
     }
     visit(tree);
-    preOrder(tree->left, visit);
-    preOrder(tree->right, visit);
+    preOrderRecursive(tree->left, visit);
+    preOrderRecursive(tree->right, visit);
 }
 
-void inOrder(node_t* tree, void (*visit)(node_t*)) {
+void inOrderRecursive(node_t* tree, void (*visit)(node_t*)) {
     if (tree == NULL) {
         return;
     }
-    inOrder(tree->left, visit);
+    inOrderRecursive(tree->left, visit);
     visit(tree);
-    inOrder(tree->right, visit);
+    inOrderRecursive(tree->right, visit);
 }
 
-void posOrder(node_t* tree, void (*visit)(node_t*)) {
+void postOrderRecursive(node_t* tree, void (*visit)(node_t*)) {
     if (tree == NULL) {
         return;
     }
-    posOrder(tree->left, visit);
-    posOrder(tree->right, visit);
+    postOrderRecursive(tree->left, visit);
+    postOrderRecursive(tree->right, visit);
     visit(tree);
 }
 
