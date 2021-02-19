@@ -2,7 +2,7 @@
 #include "bst.h"
 
 void printUsingFormat(node_t* tree) {
-    printf("%d ", tree->key);
+    // printf("%d ", tree->key);
 }
 
 int main(int argc, char** argv) {
@@ -13,22 +13,21 @@ int main(int argc, char** argv) {
 
     srand(time(NULL));
     node_t* tree = NULL;
-    printf("Generated: ");
     for (int i = 0; i < atoi(argv[1]); i++) {
         int generated = rand();
-        printf("%d ", generated);
         tree = insertKey(&tree, generated);
     }
-    puts("");
 
-    if (argc > 2) {
-        inOrder(tree, &printUsingFormat);
-        puts("");
-    }
+    clock_t startTime;
 
-    // printf("Altura: %d\n", height(tree));
+    startTime = clock();
+    inOrderRecursive(tree, &printUsingFormat);
+    printf("Recursive time: %lf seconds\n", ((double)clock() - startTime) / CLOCKS_PER_SEC);
+    startTime = clock();
+    inOrderIterative(tree, &printUsingFormat);
+    printf("Iterative time: %lf seconds\n", ((double)clock() - startTime) / CLOCKS_PER_SEC);
 
-    postOrderIterative(tree, &printUsingFormat);
+
 
     destroyBST(&tree);
 
