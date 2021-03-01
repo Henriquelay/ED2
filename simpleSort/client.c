@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
 
     sort(itemArray, 0, arraySize);
 
-    printf("Sorting took %lf seconds\nSorted array: [", (double)(clock() - clockBefore) / CLOCKS_PER_SEC);
+    printf("Sorting took %lf seconds\nSorted array: [ ", (double)(clock() - clockBefore) / CLOCKS_PER_SEC);
     for (int i = 0; i < arraySize; i++) {
         printf("%d ", itemArray[i]);
     }
