@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
     }
 
     int arraySize = atoi(argv[1]);
-    int* itemArray = (Item*)malloc(sizeof(Item) * arraySize);
+    Item* itemArray = (Item*)malloc(sizeof(Item) * arraySize);
     if (itemArray == NULL) {
         perror("Error allocating array! Exiting");
         exit(1);
