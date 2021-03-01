@@ -11,14 +11,14 @@ int main(int argc, char** argv) {
         printf("Missing arguments. Usage: (program) (Number of items to order) (list of items)");
     }
 
-    int arraySize = atoi(argv[1]) - 1;
+    int arraySize = atoi(argv[1]);
     int* itemArray = (Item*)malloc(sizeof(Item) * arraySize);
     if (itemArray == NULL) {
         perror("Error allocating array! Exiting");
         exit(1);
     }
     for (int i = 0; i < arraySize; i++) {
-        itemArray[i] = atoi(argv[2 + i]);
+        itemArray[i] = atoi(argv[2+ i]);
     }
 
     clock_t clockBefore = clock();
