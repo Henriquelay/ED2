@@ -1,23 +1,25 @@
 #include <stdlib.h>
-#include <sys/time.h>
+// #include <sys/time.h>
+#include <time.h>
+#include "../List with stack and queue/list.h"
 
 #include "item.h"
 
 #define CUTOFF (15)
 
 // Just to copy from slide, won't use on this exercise
-// void shuffle(Item* a, int N) {
-//     struct timeval tv;
-//     gettimeofday(&tv, NULL);
-//     srand48(tv.tv_usec);
-//     for (int i = N - 1; i > 0; i--) {
-//         int j = (unsigned int)(drand48() * (i + 1));
-//         exch(a[i], a[j]);
-//     }
-// }
+void shuffle(Item* a, int N) {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    srand48(tv.tv_usec);
+    for (int i = N - 1; i > 0; i--) {
+        int j = (unsigned int)(drand48() * (i + 1));
+        exch(a[i], a[j]);
+    }
+}
 
 int randomBetween(int lo, int hi) {
-    return lo + (unsigned int) drand48() % hi;
+    return lo + (rand() % (hi - lo + 1));
 }
 
 void insertionSort(Item* a, int lo, int hi) {
@@ -31,17 +33,19 @@ void insertionSort(Item* a, int lo, int hi) {
 
 int median_of_3(Item* a, int lo, int hi) {
     // TODO srand only once
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    srand48(tv.tv_usec);
+    // struct timeval tv;
+    // gettimeofday(&tv, NULL);
+    // srand48(tv.tv_usec);
+    // time_t time(NULL);
+    srand(time(0));
 
     int medianOf[3] = { randomBetween(lo, hi), randomBetween(lo, hi), randomBetween(lo, hi) };
 
     if (medianOf[0] <= medianOf[1]) {
-        if(medianOf[1] <= medianOf[2]) return medianOf[1];
+        if (medianOf[1] <= medianOf[2]) return medianOf[1];
         return medianOf[2];
-    }  else {
-        if(medianOf[1] <= medianOf[2]) return medianOf[0];
+    } else {
+        if (medianOf[1] <= medianOf[2]) return medianOf[0];
         return medianOf[1];
     }
 }
@@ -61,12 +65,55 @@ int partition(Item* a, int lo, int hi) {
     return j;                   // Return index of item known to be in place.
 }
 
-void sort(Item* a, int lo, int hi) {
+// Top-down, recursive
+void quick_sort_recursive(Item* a, int lo, int hi) {
     if (hi <= lo + CUTOFF - 1) {
         insertionSort(a, lo, hi);
         return;
     }
+    int median = median_of_3(a, lo, hi);
+    exch(a[lo], a[median]);
     int j = partition(a, lo, hi);
-    sort(a, lo, j - 1);
-    sort(a, j + 1, hi);
+    quick_sort_recursive(a, lo, j - 1);
+    quick_sort_recursive(a, j + 1, hi);
+}
+
+// Bottom-up, iterative
+
+void mallocAndPush(list_t* list, int A) {
+    int* m = malloc(sizeof(int));
+    *m = A;
+    push(list, m);
+}
+
+#define push2(L, A, B) mallocAndPush(L, B); mallocAndPush(L, A)
+
+void quick_sort_iteractive(Item* a, int lo, int hi) {
+    list_t* list = initList();
+    push2(list, lo, hi);
+    while (!isListEmpty(list)) {
+        lo = *(int*)pop(list);
+        hi = *(int*)pop(list);
+        if (hi <= lo + CUTOFF - 1) {
+            insertionSort(a, lo, hi);
+            break;
+        };
+        int median = median_of_3(a, lo, hi);
+        exch(a[lo], a[median]);
+        int i = partition(a, lo, hi);
+        if (i - lo > hi - i) {      // Test the size of sub-arrays.
+            push2(list, lo, i - 1);       // Push the larger one.
+            push2(list, i + 1, hi);       // Sort the smaller one first.
+        } else {
+            push2(list, i + 1, hi);
+            push2(list, lo, i - 1);
+        }
+    }
+
+    destroyList(list);
+}
+
+void sort(Item* a, int lo, int hi) {
+    // shuffle(a, hi - lo);
+    quick_sort_iteractive(a, lo, hi);
 }
