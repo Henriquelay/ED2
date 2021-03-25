@@ -101,9 +101,9 @@ void quick_sort_iteractive(Item* a, int lo, int hi) {
         int median = median_of_3(a, lo, hi);
         exch(a[lo], a[median]);
         int i = partition(a, lo, hi);
-        if (i - lo > hi - i) {      // Test the size of sub-arrays.
-            push2(list, lo, i - 1);       // Push the larger one.
-            push2(list, i + 1, hi);       // Sort the smaller one first.
+        if (i - lo > hi - i) {              // Test the size of sub-arrays.
+            push2(list, lo, i - 1);         // Push the larger one.
+            push2(list, i + 1, hi);         // Sort the smaller one first.
         } else {
             push2(list, i + 1, hi);
             push2(list, lo, i - 1);
@@ -111,6 +111,30 @@ void quick_sort_iteractive(Item* a, int lo, int hi) {
     }
 
     destroyList(list);
+}
+
+void quick_sort_3way_recursive(Item* a, int lo, int hi) {
+    // if (hi <= lo + CUTOFF - 1) {
+    //     insertionSort(a, lo, hi);
+    //     return;
+    // }
+    if (hi <= lo) return;
+    Item v = a[lo];
+    int lt = lo, gt = hi, i = lo;
+    while (i <= gt) {
+        if (a[i] < v) {
+            exch(a[lt], a[i]);
+            lt++;
+            i++;
+        } else if (a[i] > v) {
+            exch(a[i], a[gt]);
+            gt--;
+        } else {
+            i++;
+        }
+    }
+    quick_sort_3way_recursive(a, lo, lt - 1);
+    quick_sort_3way_recursive(a, gt + 1, hi);
 }
 
 void sort(Item* a, int lo, int hi) {
