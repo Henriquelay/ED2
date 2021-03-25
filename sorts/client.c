@@ -12,15 +12,24 @@ int main(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
 
-    int arraySize = argc - 1;
+    char* filename = argv[1];
+    FILE* file = fopen(filename, "w");
+    if (file == NULL) {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    int arraySize = atoi(argv[1]);
     Item* itemArray = (Item*)malloc(sizeof(Item) * arraySize);
     if (itemArray == NULL) {
         perror("Error allocating array! Exiting");
         exit(1);
     }
     for (int i = 0; i < arraySize; i++) {
-        itemArray[i] = atoi(argv[i + 1]);
+        fscanf(file, "%d", &itemArray[i]);
     }
+
+    fclose(file);
 
     clock_t clockBefore = clock();
 
