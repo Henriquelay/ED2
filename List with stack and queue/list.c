@@ -12,6 +12,10 @@ list_t* initList() {
     return newList;
 }
 
+char isListEmpty(list_t* list) {
+    return list->head == NULL;
+}
+
 void push(list_t* list, void* item) {
     if (item == NULL) {
         return;

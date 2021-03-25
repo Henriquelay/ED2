@@ -18,6 +18,8 @@ typedef struct list_t {
 
 list_t* initList();
 
+char isListEmpty(list_t* list);
+
 void push(list_t* list, void* item);
 void* pop(list_t* list);
 
