@@ -62,8 +62,8 @@ int partition(Item* a, int lo, int hi) {
 }
 
 void sort(Item* a, int lo, int hi) {
-    if (hi <= lo) {
-        // insertionSort(a, lo, hi);
+    if (hi <= lo + CUTOFF - 1) {
+        insertionSort(a, lo, hi);
         return;
     }
     int j = partition(a, lo, hi);
