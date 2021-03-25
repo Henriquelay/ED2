@@ -139,5 +139,5 @@ void quick_sort_3way_recursive(Item* a, int lo, int hi) {
 
 void sort(Item* a, int lo, int hi) {
     // shuffle(a, hi - lo);
-    quick_sort_iteractive(a, lo, hi);
+    quick_sort_3way_recursive(a, lo, hi);
 }
