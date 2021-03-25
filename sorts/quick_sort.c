@@ -1,5 +1,7 @@
 #include "item.h"
 
+#define CUTOFF (15)
+
 // Just to copy from slide, won't use on this exercise
 // void shuffle(Item* a, int N) {
 //     struct timeval tv;
@@ -10,6 +12,14 @@
 //         exch(a[i], a[j]);
 //     }
 // }
+
+void insertionSort(Item* a, int lo, int hi) {
+    for (int i = lo; i < hi; i++) {      // Para todos os elementos
+        for (int j = i; j > lo; j--) {   // Para os ordenados
+            compexch(a[j], a[j - 1]);
+        }
+    }
+}
 
 int partition(Item* a, int lo, int hi) {
     int i = lo, j = hi + 1;
@@ -27,7 +37,8 @@ int partition(Item* a, int lo, int hi) {
 }
 
 void sort(Item* a, int lo, int hi) {
-    if (hi <= lo) {
+    if (hi <= lo + CUTOFF - 1) {
+        insertionSort(a, lo, hi);
         return;
     }
     int j = partition(a, lo, hi);
