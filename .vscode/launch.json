@@ -9,12 +9,12 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/${fileBasenameNoExtension}",
-            "args": ["9", "5", "1"],
+            "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "MIMode": "gdb",
-            "externalConsole": false,
+            "externalConsole": true,
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
@@ -23,7 +23,7 @@
                 }
             ],
             "preLaunchTask": "C/C++: gcc build active file",
-            "miDebuggerPath": "/usr/bin/gdb"
+            "miDebuggerPath": "/usr/bin/gdb",
         }
     ]
 }
