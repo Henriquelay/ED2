@@ -120,6 +120,7 @@ Item_Edge* PQ_delmin(PQ_Vertex* pq) {
 
 void PQ_decrease_key(PQ_Vertex* pq, unsigned int id, unsigned int value) {
     unsigned int i = pq->map[id];
+    /* Decreasing priority is increasing key in a ascending PQ */
     value(pq->edges[i]) = value;
     fix_up(pq, i);
 }
@@ -175,24 +176,25 @@ unsigned int* dijkstra(PQ_Vertex** vertex, unsigned int nVert, int starting) {
     /* Ditance array to keep track of distances from graph[starting] to graph[n] */
     unsigned int* distances = malloc(sizeof * distances * nVert);
     /* To mark visited nodes */
-    char visited[nVert];
+    /* char visited[nVert]; */
     /* Internal Dijkstra's control */
     PQ_Vertex* dijEdges = PQ_init(3000);
 
-    unsigned int i;
-    for (i = 1; i <= vertex[starting]->size; i++) {
+    /* for (i = 1; i <= vertex[starting]->size; i++) {
         PQ_insert(dijEdges, vertex[starting]->edges[i]);
-    }
+    } */
+    unsigned int i;
     /* Inserting only starting node */
     for (i = 0; i < nVert; i++) {
         /* I    nitializes with maximum distance, gets replaced on first iteration */
         distances[i] = UINT_MAX;
-        visited[i] = 0;
+        /* visited[i] = 0; */
 
         /* Inserting all edges from every vertice */
-        /* unsigned int j; for (j = 1; j <= vertex[i]->size; j++) {
-            PQ_insert(dijEdges, vertex[i]->pq[j]);
-        } */
+        unsigned int j;
+        for (j = 1; j <= vertex[i]->size; j++) {
+            PQ_insert(dijEdges, vertex[i]->edges[j]);
+        }
     }
     /* A vertice's distance to itself is 0. */
     distances[starting] = 0;
@@ -210,27 +212,26 @@ unsigned int* dijkstra(PQ_Vertex** vertex, unsigned int nVert, int starting) {
         printf("Current edge:");
         print_item(edge);
         printf("\nDistances:[");
-        unsigned int k; for (k = 0; k < nVert; k++) {
+        unsigned int k;
+        for (k = 0; k < nVert; k++) {
             printf("%u ", distances[k]);
-        } 
+        }
         puts("]"); */
-        unsigned int newDistance = distances[id(edge)] == UINT_MAX ? value(edge) : distances[id(edge)] + value(edge);
+        unsigned int newDistance = distances[id(edge)] + value(edge);
+        /* printf("NewDistance from starting to %u: %u\n", to(edge),  newDistance); */
 
-        /* printf("NewDistance from %u to %u: %u\n", id(edge), to(edge),  newDistance); */
         if (newDistance < distances[to(edge)]) {
             /* puts("Updating distance"); */
             distances[to(edge)] = newDistance;
-            if (!visited[to(edge)]) {
-                /* puts("Inserting node:"); */
-                /* PQ_print(vertex[to(edge)]); */
-                unsigned int j;
-                for (j = 1; j <= vertex[to(edge)]->size; j++) {
-                    PQ_insert(dijEdges, vertex[to(edge)]->edges[j]);
-                }
-            }
+            /* PQ_decrease_key(dijEdges, to(edge), newDistance); */
         }
+        /* printf("NewDistances:[");
+        for (k = 0; k < nVert; k++) {
+            printf("%u ", distances[k]);
+        }
+        puts("]"); */
 
-        visited[id(edge)] = 1;
+        /* visited[id(edge)] = 1; */
         /* puts(""); */
     }
 
