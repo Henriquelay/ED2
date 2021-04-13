@@ -18,11 +18,11 @@ typedef struct PQ {
 #define value(A)        (A->weight)                       // retorna valor do nó
 #define to(A)           (id(A->to))                       // retorna id do nó destino
 #define more(A, B)      (value(A) > value(B))          // compara nós, por valor
-// #define exch(A, B)      { Item = A; A = B; B = t; }  // troca dois nós
-void exch(Edge* a, Edge* b) {
-    Edge* T = a;
-    a = b;
-    b = T;
+// #define exch(A, B)      { Item t = A; A = B; B = t; }  // troca dois nós
+void exch(Edge** a, Edge** b) {
+    Edge* T = *a;
+    *a = *b;
+    *b = T;
 }
 
 Edge make_item(unsigned int id, unsigned int value, Edge* to) {
@@ -47,15 +47,26 @@ Edge* init_item(unsigned int id, unsigned int value, Edge* to) {
 }
 
 void swap(PQ* pq, unsigned int i, unsigned int j) {
-    exch(pq->pq[i], pq->pq[j]);
-    pq->map[id(pq->pq[i])] = i;
-    pq->map[id(pq->pq[j])] = j;
+    exch(&pq->pq[i], &pq->pq[j]);
+    // pq->map[id(pq->pq[i])] = i;
+    // pq->map[id(pq->pq[j])] = j;
 }
 
 void fix_up(PQ* pq, unsigned int k) {
     while (k > 1 && more(pq->pq[k / 2], pq->pq[k])) {
+        if (pq && pq->pq) {
+            printf("Is k=%u > 1 ? %u && more K/2 K\n", k, more(pq->pq[k / 2], pq->pq[k]));
+            printf("pq->pq[k / 2]=%u, pq->pq[k]=%u\n", value(pq->pq[k / 2]), value(pq->pq[k]));
+            printf("Result: %u\n", k > 1 && more(pq->pq[k / 2], pq->pq[k]));
+        }
         swap(pq, k, k / 2);
         k = k / 2;
+    }
+    printf("Sai do while fdc PQ=%p\n", pq);
+    if (pq && pq->pq) {
+        printf("Is k=%u > 1 && more(K/2, K)=%d\n", k, k > 1 ? more(pq->pq[k / 2], pq->pq[k]) : -1);
+        printf("pq->pq[k / 2]=%d, pq->pq[k]=%d\n", k/2 >= 1 ? value(pq->pq[k / 2]) : -1, k >= 1 ? value(pq->pq[k]) : -1);
+        printf("Result: %u\n", k > 1 && more(pq->pq[k / 2], pq->pq[k]));
     }
 }
 
@@ -266,7 +277,13 @@ int main(int argc, char* argv[]) {
             Edge* TItem = init_item(Tcur, w, SItem);
             SItem->to = TItem;
 
+            printf("Inserindo [");
+            print_item(SItem);
+            printf("]\n");
             PQ_insert(pqMap[Scur], SItem);
+            printf("Inserindo [");
+            print_item(TItem);
+            printf("]\n");
             PQ_insert(pqMap[Tcur], TItem);
         }
 
