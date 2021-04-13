@@ -55,18 +55,9 @@ void swap(PQ* pq, unsigned int i, unsigned int j) {
 void fix_up(PQ* pq, unsigned int k) {
     while (k > 1 && more(pq->pq[k / 2], pq->pq[k])) {
         if (pq && pq->pq) {
-            printf("Is k=%u > 1 ? %u && more K/2 K\n", k, more(pq->pq[k / 2], pq->pq[k]));
-            printf("pq->pq[k / 2]=%u, pq->pq[k]=%u\n", value(pq->pq[k / 2]), value(pq->pq[k]));
-            printf("Result: %u\n", k > 1 && more(pq->pq[k / 2], pq->pq[k]));
         }
         swap(pq, k, k / 2);
         k = k / 2;
-    }
-    printf("Sai do while fdc PQ=%p\n", pq);
-    if (pq && pq->pq) {
-        printf("Is k=%u > 1 && more(K/2, K)=%d\n", k, k > 1 ? more(pq->pq[k / 2], pq->pq[k]) : -1);
-        printf("pq->pq[k / 2]=%d, pq->pq[k]=%d\n", k/2 >= 1 ? value(pq->pq[k / 2]) : -1, k >= 1 ? value(pq->pq[k]) : -1);
-        printf("Result: %u\n", k > 1 && more(pq->pq[k / 2], pq->pq[k]));
     }
 }
 
@@ -176,26 +167,25 @@ unsigned int* dijkstra(PQ** vertex, unsigned int nVert, int starting) {
         return NULL;
     }
 
-    printf("Starts at: %u\n", starting);
+    // printf("Starts at: %u\n", starting);
 
     // Ditance array to keep track of distances from graph[starting] to graph[n]
     unsigned int* distances = malloc(sizeof * distances * nVert);
     // To mark visited nodes
     char visited[nVert];
     // Internal Dijkstra's control
-    PQ* dijEdges;
+    PQ* dijEdges = PQ_init(3000);
 
     // Initializing arrays
+    for (unsigned int i = 1; i <= vertex[starting]->size; i++) {
+        PQ_insert(dijEdges, vertex[starting]->pq[i]);
+    }
     for (unsigned int i = 0; i < nVert; i++) {
         // I    nitializes with maximum distance, gets replaced on first iteration
         distances[i] = UINT_MAX;
         visited[i] = 0;
-        dijEdges = PQ_init(30);
 
         // Inserting only starting node
-        for (unsigned int j = 1; j <= vertex[starting]->size; j++) {
-            PQ_insert(dijEdges, vertex[starting]->pq[j]);
-        }
         // Inserting all edges from every vertice
         // for (unsigned int j = 1; j <= vertex[i]->size; j++) {
         //     PQ_insert(dijVertex[i], vertex[i]->pq[j]);
@@ -205,38 +195,36 @@ unsigned int* dijkstra(PQ** vertex, unsigned int nVert, int starting) {
     distances[starting] = 0;
 
 
-    puts("After starting everything:");
-    PQ_print(dijEdges);
+    // puts("After starting everything:");
+    // PQ_print(dijEdges);
 
     // TODO
     while (!PQ_empty(dijEdges)) {
-        puts("Testando PQ_Min:");
-        print_item(PQ_min(dijEdges));
+        // puts("Current state:");
+        // PQ_print(dijEdges);
         Edge* edge = PQ_delmin(dijEdges);
-        printf("\nCurrent edge (PQ_delmin):");
-        print_item(edge);
-        printf("\nDistances:[");
-        for (unsigned int k = 0; k < nVert; k++) {
-            printf("%u ", distances[k]);
-        }
-        puts("]");
-        unsigned int newDistance = distances[to(edge)] == UINT_MAX ? value(edge) : distances[id(edge)] + value(edge);
+        // printf("Current edge:");
+        // print_item(edge);
+        // printf("\nDistances:[");
+        // for (unsigned int k = 0; k < nVert; k++) {
+        //     printf("%u ", distances[k]);
+        // }
+        // puts("]");
+        unsigned int newDistance = distances[id(edge)] == UINT_MAX ? value(edge) : distances[id(edge)] + value(edge);
 
-        printf("NewDistance from %u to %u: %u\n", id(edge), to(edge), newDistance);
+        // printf("NewDistance from %u to %u: %u\n", id(edge), to(edge), newDistance);
         if (newDistance < distances[to(edge)]) {
-            puts("Updating distance");
+            // puts("Updating distance");
             distances[to(edge)] = newDistance;
             if (!visited[to(edge)]) {
                 for (unsigned int j = 1; j <= vertex[starting]->size; j++) {
                     PQ_insert(dijEdges, vertex[to(edge)]->pq[j]);
                 }
-                puts("After iserting new vertex:");
-                PQ_print(dijEdges);
             }
         }
 
         visited[id(edge)] = 1;
-        puts("");
+        // puts("");
     }
 
 
@@ -270,50 +258,44 @@ int main(int argc, char* argv[]) {
             // printf("s=%u t=%u w=%u\n", Scur, Tcur, w);
 
             // TODO make increasing-size PQ if filled
-            if (pqMap[Scur] == NULL) pqMap[Scur] = PQ_init(10);
-            if (pqMap[Tcur] == NULL) pqMap[Tcur] = PQ_init(10);
+            if (pqMap[Scur] == NULL) pqMap[Scur] = PQ_init(1000);
+            if (pqMap[Tcur] == NULL) pqMap[Tcur] = PQ_init(1000);
 
             Edge* SItem = init_item(Scur, w, NULL);
             Edge* TItem = init_item(Tcur, w, SItem);
             SItem->to = TItem;
 
-            printf("Inserindo [");
-            print_item(SItem);
-            printf("]\n");
             PQ_insert(pqMap[Scur], SItem);
-            printf("Inserindo [");
-            print_item(TItem);
-            printf("]\n");
             PQ_insert(pqMap[Tcur], TItem);
         }
 
         /// OK
 
-        for (unsigned int j = 0; j < n; j++) {
-            printf("pqMap[%u] AFTER parsing:\n(", j);
-            PQ_print(pqMap[j]);
-            puts(")");
-        }
+        // for (unsigned int j = 0; j < n; j++) {
+        //     printf("pqMap[%u] AFTER parsing:\n(", j);
+        //     PQ_print(pqMap[j]);
+        //     puts(")");
+        // }
 
         // printf("\nDoing dijkstra from %u to %u\n", S, T);
         unsigned int* distances = dijkstra(pqMap, n, S);
         // Printing distances
-        printf("Distances:\n[");
-        if (distances != NULL) {
-            for (unsigned int k = 0; k < n; k++) {
-                printf("%u ", distances[k]);
-            }
-        } else {
-            printf("NULL");
-        }
-        printf("]\n");
+        // printf("Distances:\n[");
+        // if (distances != NULL) {
+        //     for (unsigned int k = 0; k < n; k++) {
+        //         printf("%u ", distances[k]);
+        //     }
+        // } else {
+        //     printf("NULL");
+        // }
+        // printf("]\n");
 
         if (distances != NULL) {
             printf("%u", distances[T]);
         } else {
             printf("unreachable");
         }
-        puts("\n------\n");
+        puts("");
 
 
         free(distances);
