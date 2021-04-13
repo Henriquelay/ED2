@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <limits.h>
 
+/* Fazer lista de aresta ao inves de array -- para manter quantas quisermos */
 typedef struct Item_Edge {
     unsigned int id;          /* identificador do nó */
     unsigned int weight;     /* valor associado ao nó */
