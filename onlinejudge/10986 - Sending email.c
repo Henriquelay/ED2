@@ -2,55 +2,51 @@
 #include <stdlib.h>
 #include <limits.h>
 
-typedef struct Item {
+typedef struct Edge {
     unsigned int id;                  // identificador do nó
     unsigned int weight;     // valor associado ao nó
-    struct Item* to;     // valor associado ao nó destino
-} Item;
+    struct Edge* to;     // valor associado ao nó destino
+} Edge;
 
 typedef struct PQ {
-    Item** pq;
+    Edge** pq;
     int* map;
     unsigned int size;
 } PQ;
 
 #define id(A)           (A->id)                           // retorna identificador do nó
 #define value(A)        (A->weight)                       // retorna valor do nó
-#define to(A)           (id(A->to))                       // retorna valor do nó destino
+#define to(A)           (id(A->to))                       // retorna id do nó destino
 #define more(A, B)      (value(A) > value(B))          // compara nós, por valor
 // #define exch(A, B)      { Item = A; A = B; B = t; }  // troca dois nós
-void exch(Item* a, Item* b) {
-    Item* T = a;
+void exch(Edge* a, Edge* b) {
+    Edge* T = a;
     a = b;
     b = T;
 }
 
-Item make_item(unsigned int id, unsigned int value, Item* to) {
-    Item t;
+Edge make_item(unsigned int id, unsigned int value, Edge* to) {
+    Edge t;
     t.id = id;
     t.weight = value;
     t.to = to;
     return t;
 }
 
-void print_item(Item* item) {
+void print_item(Edge* item) {
     if (item == NULL) { printf("NULL"); return; }
-    printf("%u<-", id(item));
+    printf("%u-", id(item));
     printf("%u", value(item));
     printf("->%u", to(item));
 }
 
-Item* init_item(unsigned int id, unsigned int value, Item* to) {
-    Item* newItem = (Item*)malloc(sizeof(Item));
+Edge* init_item(unsigned int id, unsigned int value, Edge* to) {
+    Edge* newItem = (Edge*)malloc(sizeof(Edge));
     *newItem = make_item(id, value, to);
     return newItem;
 }
 
-// static Item* pq;
-// static int* map;
-// static int N;
-
-/* static */ void swap(PQ* pq, unsigned int i, unsigned int j) {
+void swap(PQ* pq, unsigned int i, unsigned int j) {
     exch(pq->pq[i], pq->pq[j]);
     pq->map[id(pq->pq[i])] = i;
     pq->map[id(pq->pq[j])] = j;
@@ -63,23 +59,24 @@ void fix_up(PQ* pq, unsigned int k) {
     }
 }
 
-void fix_down(PQ* pq, Item** a, unsigned int sz, unsigned int k) {
-    while (2 * k <= sz) {
-        unsigned int j = 2 * k;
-        if (j < sz && more(a[j], a[j + 1])) {
-            j++;
+void fix_down(PQ* pq, unsigned int parent) {
+    while (2 * parent <= pq->size) {
+        unsigned int child = 2 * parent;
+        // child < pq->size checks if there's a position after child, since PQ starts at 1;
+        if (child < pq->size && more(pq->pq[child], pq->pq[child + 1])) {
+            child++;
         }
-        if (!more(a[k], a[j])) {
+        if (!more(pq->pq[parent], pq->pq[child])) {
             break;
         }
-        swap(pq, k, j);
-        k = j;
+        swap(pq, parent, child);
+        parent = child;
     }
 }
 
 PQ* PQ_init(unsigned int maxSize) {
     PQ* pq = (PQ*)malloc(sizeof(PQ));
-    pq->pq = (Item**)calloc(maxSize + 1, sizeof(Item*));
+    pq->pq = (Edge**)calloc(maxSize + 1, sizeof(Edge*));
     pq->map = (unsigned int*)malloc((maxSize + 1) * sizeof(unsigned int));
     pq->size = 0;
     return pq;
@@ -99,21 +96,24 @@ void PQ_print(PQ* pq) {
     }
 }
 
-void PQ_insert(PQ* pq, Item* v) {
-    pq->pq[++(pq->size)] = v;
+// FIXME
+void PQ_insert(PQ* pq, Edge* v) {
+    pq->size++;
+    pq->pq[pq->size] = v;
     pq->map[id(v)] = pq->size;
     fix_up(pq, pq->size);
 }
 
-Item* PQ_delmin(PQ* pq) {
-    Item* min = pq->pq[1];
-    swap(pq, 1, pq->size--);
-    fix_down(pq, pq->pq, pq->size, 1);
-    return min;
+Edge* PQ_min(PQ* pq) {
+    return pq->pq[1];
 }
 
-Item* PQ_min(PQ* pq) {
-    return pq->pq[1];
+Edge* PQ_delmin(PQ* pq) {
+    Edge* min = PQ_min(pq);
+    swap(pq, 1, pq->size);
+    pq->size--;
+    fix_down(pq, 1);
+    return min;
 }
 
 void PQ_decrease_key(PQ* pq, unsigned int id, unsigned int value) {
@@ -127,8 +127,8 @@ char PQ_empty(PQ* pq) {
 }
 
 char PQ_exists(PQ* pq, unsigned int key) {
-    for (unsigned int i = 0; i < pq->size; i++) {
-        if (pq->pq[i] != NULL && id(pq->pq[i]) == key) return 1;
+    for (unsigned int i = 1; i <= pq->size; i++) {
+        if (id(pq->pq[i]) == key) return 1;
     }
     return 0;
 }
@@ -144,6 +144,7 @@ unsigned int PQ_size(PQ* pq) {
     return pq->size;
 }
 
+// Frees the Items inside too
 void PQ_finish(PQ* pq) {
     if (pq == NULL) return;
     for (unsigned int i = 0; i < pq->size;) {
@@ -155,12 +156,12 @@ void PQ_finish(PQ* pq) {
     pq = NULL;
 }
 
-//////////
+/////////////////////////////////////
 
-unsigned int* dijkstra(PQ** graph, unsigned int nVert, int starting) {
+unsigned int* dijkstra(PQ** vertex, unsigned int nVert, int starting) {
     // If starting node has no edges
     // Will be useful quitting early to not allocate anything
-    if (graph[starting] == NULL) {
+    if (vertex[starting] == NULL) {
         return NULL;
     }
 
@@ -171,58 +172,66 @@ unsigned int* dijkstra(PQ** graph, unsigned int nVert, int starting) {
     // To mark visited nodes
     char visited[nVert];
     // Internal Dijkstra's control
-    PQ* edges[nVert];
+    PQ* dijEdges;
 
     // Initializing arrays
     for (unsigned int i = 0; i < nVert; i++) {
-        // Initializes with maximum distance, gets replaced on first iteration
+        // I    nitializes with maximum distance, gets replaced on first iteration
         distances[i] = UINT_MAX;
         visited[i] = 0;
-        edges[i] = PQ_init(30);
+        dijEdges = PQ_init(30);
 
-        // Inserting all nodes
-        for (unsigned int j = 1; j <= graph[i]->size; j++) {
-            PQ_insert(edges[i], graph[i]->pq[j]);
+        // Inserting only starting node
+        for (unsigned int j = 1; j <= vertex[starting]->size; j++) {
+            PQ_insert(dijEdges, vertex[starting]->pq[j]);
         }
+        // Inserting all edges from every vertice
+        // for (unsigned int j = 1; j <= vertex[i]->size; j++) {
+        //     PQ_insert(dijVertex[i], vertex[i]->pq[j]);
+        // }
     }
     // A vertice's distance to itself is 0.
     distances[starting] = 0;
 
 
     puts("After starting everything:");
-    for (unsigned int i = 0; i < nVert; i++) {
-        PQ_print(edges[i]);
-    }
+    PQ_print(dijEdges);
 
-    for (unsigned int i = 0; i < nVert; i++) {
-        Item* edge = PQ_delmin(edges[i]);
-        printf("Current edge:");
+    // TODO
+    while (!PQ_empty(dijEdges)) {
+        puts("Testando PQ_Min:");
+        print_item(PQ_min(dijEdges));
+        Edge* edge = PQ_delmin(dijEdges);
+        printf("\nCurrent edge (PQ_delmin):");
         print_item(edge);
         printf("\nDistances:[");
         for (unsigned int k = 0; k < nVert; k++) {
             printf("%u ", distances[k]);
         }
         puts("]");
-        unsigned int newDistance = distances[id(edge)] == UINT_MAX ? value(edge) : distances[id(edge)] + value(edge);
+        unsigned int newDistance = distances[to(edge)] == UINT_MAX ? value(edge) : distances[id(edge)] + value(edge);
 
-        printf("NewDistance to %u: %u\n", to(edge), newDistance);
+        printf("NewDistance from %u to %u: %u\n", id(edge), to(edge), newDistance);
         if (newDistance < distances[to(edge)]) {
             puts("Updating distance");
             distances[to(edge)] = newDistance;
-            printf("Current edge:");
-            print_item(edge);
-            puts("");
-            PQ_decrease_key(edges[i], id(edge) + 1, newDistance);
+            if (!visited[to(edge)]) {
+                for (unsigned int j = 1; j <= vertex[starting]->size; j++) {
+                    PQ_insert(dijEdges, vertex[to(edge)]->pq[j]);
+                }
+                puts("After iserting new vertex:");
+                PQ_print(dijEdges);
+            }
         }
+
+        visited[id(edge)] = 1;
         puts("");
     }
 
 
-    for (unsigned int i = 0; i < nVert; i++) {
-        free(edges[i]->pq);
-        free(edges[i]->map);
-        free(edges[i]);
-    }
+    free(dijEdges->pq);
+    free(dijEdges->map);
+    free(dijEdges);
     return distances;
 }
 
@@ -250,23 +259,24 @@ int main(int argc, char* argv[]) {
             // printf("s=%u t=%u w=%u\n", Scur, Tcur, w);
 
             // TODO make increasing-size PQ if filled
-            // TODO duplicating edge on input, do it so only 1 is needed if possible
             if (pqMap[Scur] == NULL) pqMap[Scur] = PQ_init(10);
             if (pqMap[Tcur] == NULL) pqMap[Tcur] = PQ_init(10);
 
-            Item* SItem = init_item(Scur, w, NULL);
-            Item* TItem = init_item(Tcur, w, SItem);
+            Edge* SItem = init_item(Scur, w, NULL);
+            Edge* TItem = init_item(Tcur, w, SItem);
             SItem->to = TItem;
 
             PQ_insert(pqMap[Scur], SItem);
             PQ_insert(pqMap[Tcur], TItem);
         }
 
-        // for (unsigned int j = 0; j < n; j++) {
-        //     printf("pqMap[%u] AFTER inserting:\n(", j);
-        //     PQ_print(pqMap[j]);
-        //     puts(")");
-        // }
+        /// OK
+
+        for (unsigned int j = 0; j < n; j++) {
+            printf("pqMap[%u] AFTER parsing:\n(", j);
+            PQ_print(pqMap[j]);
+            puts(")");
+        }
 
         // printf("\nDoing dijkstra from %u to %u\n", S, T);
         unsigned int* distances = dijkstra(pqMap, n, S);
@@ -286,7 +296,7 @@ int main(int argc, char* argv[]) {
         } else {
             printf("unreachable");
         }
-        puts("");
+        puts("\n------\n");
 
 
         free(distances);
