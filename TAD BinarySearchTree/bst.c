@@ -87,18 +87,18 @@ void postOrderRecursive(node_t* tree, void (*visit)(node_t*)) {
 }
 
 void preOrderIterative(node_t* tree, void (*visit)(node_t*)) {
-    list_t* list = initList();
+    list_t* list = list_init();
 
-    push(list, tree);
+    list_push(list, tree);
 
     node_t* current = NULL;
-    while ((current = pop(list)) != NULL) {
+    while ((current = list_pop(list)) != NULL) {
         visit(current);
         if (current->right != NULL) {
-            push(list, current->right);
+            list_push(list, current->right);
         }
         if (current->left != NULL) {
-            push(list, current->left);
+            list_push(list, current->left);
         }
     }
 
@@ -106,15 +106,15 @@ void preOrderIterative(node_t* tree, void (*visit)(node_t*)) {
 }
 
 void inOrderIterative(node_t* tree, void (*visit)(node_t*)) {
-    list_t* list = initList();
+    list_t* list = list_init();
 
     node_t* current = tree;
     while (list->head != NULL || current != NULL) {
         if (current != NULL) {
-            push(list, current);
+            list_push(list, current);
             current = current->left;
         } else {
-            current = pop(list);
+            current = list_pop(list);
             visit(current);
             current = current->right;
         }
@@ -124,14 +124,14 @@ void inOrderIterative(node_t* tree, void (*visit)(node_t*)) {
 }
 
 void postOrderIterative(node_t* tree, void (*visit)(node_t*)) {
-    list_t* list = initList();
+    list_t* list = list_init();
 
     node_t* lastNodeVisited = NULL;
 
     node_t* current = tree;
     while (list->head != NULL || current != NULL) {
         if (current != NULL) {
-            push(list, current);
+            list_push(list, current);
             current = current->left;
         } else {
             node_t* stackHead = list->head->value;
@@ -140,7 +140,7 @@ void postOrderIterative(node_t* tree, void (*visit)(node_t*)) {
                 current = stackHead->right;
             } else {
                 visit(stackHead);
-                lastNodeVisited = pop(list);
+                lastNodeVisited = list_pop(list);
             }
         }
     }
@@ -149,16 +149,16 @@ void postOrderIterative(node_t* tree, void (*visit)(node_t*)) {
 }
 
 void levelOrderInterative(node_t* tree, void (*visit)(node_t*)) {
-    list_t* list = initList();
+    list_t* list = list_init();
 
-    enqueue(list, tree);
+    list_enqueue(list, tree);
 
     node_t* current = NULL;
     while (list->tail != NULL) {
-        current = dequeue(list);
+        current = list_dequeue(list);
         visit(current);
-        enqueue(list, current->left);
-        enqueue(list, current->right);
+        list_enqueue(list, current->left);
+        list_enqueue(list, current->right);
     }
 
     free(list);

@@ -1,6 +1,6 @@
 #include "list.h"
 
-list_t* initList() {
+list_t* list_init() {
     list_t* newList = (list_t*)malloc(sizeof(list_t));
     if (newList == NULL) {
         perror("Error creating new list. Exiting");
@@ -12,11 +12,11 @@ list_t* initList() {
     return newList;
 }
 
-char isListEmpty(list_t* list) {
+char list_isEmpty(list_t* list) {
     return list->head == NULL;
 }
 
-void push(list_t* list, void* item) {
+void list_push(list_t* list, void* item) {
     if (item == NULL) {
         return;
     }
@@ -38,7 +38,7 @@ void push(list_t* list, void* item) {
     }
 }
 
-void* pop(list_t* list) {
+void* list_pop(list_t* list) {
     if (list->head == NULL) {
         return NULL;
     }
@@ -55,7 +55,7 @@ void* pop(list_t* list) {
     return holder;
 }
 
-void enqueue(list_t* list, void* item) {
+void list_enqueue(list_t* list, void* item) {
     if (item == NULL) {
         return;
     }
@@ -77,11 +77,11 @@ void enqueue(list_t* list, void* item) {
     }
 }
 
-void* dequeue(list_t* list) {
-    return pop(list);
+void* list_dequeue(list_t* list) {
+    return list_pop(list);
 }
 
-void printList(list_t* list, const char* format) {
+void list_print(list_t* list, const char* format) {
     for (linked_node_t* current = list->head; current != NULL; current = current->next) {
         printf(format, current->value);
     }
@@ -99,7 +99,7 @@ void pointerThingy(linked_node_t* node) {
     }
 }
 
-void destroyList(list_t* list) {
+void list_destroy(list_t* list) {
     if (list != NULL) {
         while (list->head != NULL) {
             linked_node_t* freeMe = list->head;

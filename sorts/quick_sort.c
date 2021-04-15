@@ -83,17 +83,17 @@ void quick_sort_recursive(Item* a, int lo, int hi) {
 void mallocAndPush(list_t* list, int A) {
     int* m = malloc(sizeof(int));
     *m = A;
-    push(list, m);
+    list_push(list, m);
 }
 
 #define push2(L, A, B) mallocAndPush(L, B); mallocAndPush(L, A)
 
 void quick_sort_iteractive(Item* a, int lo, int hi) {
-    list_t* list = initList();
+    list_t* list = list_init();
     push2(list, lo, hi);
-    while (!isListEmpty(list)) {
-        lo = *(int*)pop(list);
-        hi = *(int*)pop(list);
+    while (!list_isEmpty(list)) {
+        lo = *(int*)list_pop(list);
+        hi = *(int*)list_pop(list);
         if (hi <= lo + CUTOFF - 1) {
             insertionSort(a, lo, hi);
             break;
@@ -110,7 +110,7 @@ void quick_sort_iteractive(Item* a, int lo, int hi) {
         }
     }
 
-    destroyList(list);
+    list_destroy(list);
 }
 
 void quick_sort_3way_recursive(Item* a, int lo, int hi) {

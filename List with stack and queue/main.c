@@ -9,7 +9,7 @@ int main(int argc, char** argv) {
     }
 
     srand(time(NULL));
-    list_t* list = initList();
+    list_t* list = list_init();
 
     printf("Generated: ");
     for (int i = 0; i < atoi(argv[1]); i++) {
@@ -17,20 +17,20 @@ int main(int argc, char** argv) {
         int generated = rand() % 10;
         *allocatingSize = generated;
         printf("%d ", generated);
-        enqueue(list, allocatingSize);
+        list_enqueue(list, allocatingSize);
     }
     puts("");
 
-    printList(list, "%p ");
+    list_print(list, "%p ");
     puts("");
 
     for (int i = 0; i < atoi(argv[1]); i++) {
-        int* removed = (int*)pop(list);
+        int* removed = (int*)list_pop(list);
         printf("%d ", *removed);
         free(removed);
     }
 
-    destroyList(list);
+    list_destroy(list);
 
     return 0;
 }
